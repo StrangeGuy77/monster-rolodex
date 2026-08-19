@@ -1,26 +1,50 @@
 import { Component } from "react";
 
-import logo from "./logo.svg";
 import "./App.css";
 
 class App extends Component {
+	constructor() {
+		super();
+
+		this.state = {
+			monsters: [],
+		};
+	}
+
+	componentDidMount() {
+		fetch("http://localhost:4000/users")
+			.then((res) => res.json())
+			.then((res) => {
+				this.setState(() => ({
+					monsters: res.users,
+				}));
+			});
+	}
+
 	render() {
 		return (
 			<div className="App">
-				<header className="App-header">
-					<img src={logo} className="App-logo" alt="logo" />
-					<p>
-						Edit <code>src/App.js</code> and save to reload.
-					</p>
-					<a
-						className="App-link"
-						href="https://reactjs.org"
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						Learn React
-					</a>
-				</header>
+				<input
+					className="searchbar"
+					type="search"
+					placeholder="Search monsters..."
+					onChange={(e) => {
+						const searchString = e.target.value.toLowerCase();
+
+						this.setState((curr) => {
+							return {
+								monsters: curr.monsters.filter((monster) =>
+									monster.name.toLowercase().includes(searchString),
+								),
+							};
+						});
+					}}
+				/>
+				{this.state.monsters.map((monster) => (
+					<div key={monster.id}>
+						<h1>{monster.name}</h1>
+					</div>
+				))}
 			</div>
 		);
 	}
